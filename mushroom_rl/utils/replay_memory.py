@@ -31,6 +31,7 @@ class ReplayMemory(Serializable):
             _states='pickle!',
             _actions='pickle!',
             _rewards='pickle!',
+            _rewards_i='pickle!',
             _next_states='pickle!',
             _absorbing='pickle!',
             _last='pickle!'
@@ -51,6 +52,10 @@ class ReplayMemory(Serializable):
             self._next_states[self._idx] = dataset[i][3]
             self._absorbing[self._idx] = dataset[i][4]
             self._last[self._idx] = dataset[i][5]
+            try:
+                self._rewards_i[self._idx] = dataset[i][6]
+            except:
+                pass
 
             self._idx += 1
             if self._idx == self._max_size:
@@ -71,6 +76,7 @@ class ReplayMemory(Serializable):
         s = list()
         a = list()
         r = list()
+        ri = list()
         ss = list()
         ab = list()
         last = list()
@@ -78,12 +84,16 @@ class ReplayMemory(Serializable):
             s.append(np.array(self._states[i]))
             a.append(self._actions[i])
             r.append(self._rewards[i])
+            try:
+                ri.append(self._rewards_i[i])
+            except:
+                pass
             ss.append(np.array(self._next_states[i]))
             ab.append(self._absorbing[i])
             last.append(self._last[i])
 
         return np.array(s), np.array(a), np.array(r), np.array(ss),\
-            np.array(ab), np.array(last)
+            np.array(ab), np.array(last), np.array(ri)
 
     def reset(self):
         """
@@ -95,6 +105,10 @@ class ReplayMemory(Serializable):
         self._states = [None for _ in range(self._max_size)]
         self._actions = [None for _ in range(self._max_size)]
         self._rewards = [None for _ in range(self._max_size)]
+        try:
+            self._rewards_i = [None for _ in range(self._max_size)]
+        except:
+            pass
         self._next_states = [None for _ in range(self._max_size)]
         self._absorbing = [None for _ in range(self._max_size)]
         self._last = [None for _ in range(self._max_size)]
